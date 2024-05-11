@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_auth/controllers/user_controller.dart';
+import 'package:parkware/controllers/user_controller.dart';
 import 'package:iconly/iconly.dart';
 
 import 'home_page.dart';
@@ -25,7 +25,9 @@ class _LoginPageState extends State<LoginPage> {
               const Spacer(),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 380),
-                child: Image.asset('assets/food.png'),
+                child: Image.asset('assets/parkware_login_2.png',
+                  width: 380, // Establece el ancho de la imagen
+                  height: 600,),
               ),
               const Spacer(),
               Text(
