@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[

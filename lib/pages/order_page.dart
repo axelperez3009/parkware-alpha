@@ -60,7 +60,7 @@ class _OrderPageState extends State<OrderPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => StorePage(storeName: selectedStore!.name, id: 'js')),
+                  MaterialPageRoute(builder: (context) => StorePage(storeName: selectedStore!.name,catalogsId: selectedStore!.catalogs, id: selectedStore!.id, )),
                 );
               },
               child: Icon(Icons.shopping_cart),
