@@ -44,7 +44,7 @@ class _PaymentPageState extends State<PaymentPage> {
       appBar: AppBar(
         title: SizedBox.shrink(),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.green,
       ),
       body: Center(
         child: Padding(
@@ -119,7 +119,7 @@ class _PaymentPageState extends State<PaymentPage> {
       },
       label: Text('Pagar'),
       icon: Icon(Icons.payment),
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.green,
     );
   }
 

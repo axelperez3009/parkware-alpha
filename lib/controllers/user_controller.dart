@@ -24,4 +24,9 @@ class UserController {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
   }
+
+  // Método para obtener el UID del usuario actualmente autenticado
+  static String getCurrentUserUid() {
+    return user!.uid;
+  }
 }

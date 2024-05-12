@@ -9,6 +9,7 @@ import 'package:parkware/pages/login_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:parkware/config/constants/environment.dart';
+import 'package:parkware/splash_screen.dart';
 
 Future<void> initializeDependencies() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,10 +38,20 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue,),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent,),
         textTheme: GoogleFonts.montserratTextTheme(),
       ),
-      home: UserController.user != null ? const HomePage() : const LoginPage(),
+      home: FutureBuilder(
+        future: Future.delayed(Duration(seconds: 3)), // Espera 3 segundos antes de mostrar la página de inicio de sesión o la página principal
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return SplashScreen(); // Muestra la pantalla de inicio (splash screen)
+          } else {
+            return UserController.user != null ? const HomePage() : const LoginPage(); // Muestra la página de inicio de sesión o la página principal según el estado del usuario
+          }
+        },
+      ),
     );
   }
 }
+

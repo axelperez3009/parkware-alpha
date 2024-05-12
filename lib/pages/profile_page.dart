@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parkware/pages/login_page.dart';
 import '../controllers/user_controller.dart';
+import 'package:parkware/presentation/views/purchases/purchases_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -17,36 +18,37 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            color: Colors.blue, // Color de fondo para la parte superior
+            color: Colors.green, // Color de fondo para la parte superior
             padding: EdgeInsets.all(20),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  foregroundImage: NetworkImage(UserController.user?.photoURL ?? ''),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      UserController.user?.displayName ?? '',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Aquí puedes agregar la navegación a la página de ajustes
-                      },
-                      child: Icon(Icons.settings),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    CircleAvatar(
+      radius: 40,
+      foregroundImage: NetworkImage(UserController.user?.photoURL ?? ''),
+    ),
+    Flexible(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Text(
+          UserController.user?.displayName ?? '',
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ),
+    SizedBox(width: 10),
+    ElevatedButton(
+      onPressed: () async {
+        // Aquí puedes agregar la navegación a la página de ajustes
+      },
+      child: Icon(Icons.settings),
+    ),
+  ],
+),
+
           ),
           Expanded(
             child: ListView(
@@ -55,7 +57,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Icon(Icons.shopping_cart),
                   title: Text('Mis Compras'),
                   onTap: () {
-                    // Implementa la navegación a la sección de mis compras
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyOrdersPage()),
+                    );
                   },
                 ),
                 ListTile(
