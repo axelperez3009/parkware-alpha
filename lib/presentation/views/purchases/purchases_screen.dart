@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:parkware/controllers/user_controller.dart';
 import 'package:parkware/data/api_backend.dart';
-
+import 'package:flutter/material.dart';
 class MyOrdersPage extends StatefulWidget {
   const MyOrdersPage({Key? key}) : super(key: key);
 
@@ -27,8 +27,6 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
       setState(() {
         myOrders = response;
       });
-        DateTime now = DateTime.now();
-        print(now);
     } catch (error) {
       print('Error: $error');
     }
@@ -53,11 +51,13 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
       itemBuilder: (BuildContext context, int index) {
         final order = myOrders[index];
         final orderId = order['orderNumber'];
-        final orderDate = order['date'];
+        final timestamp = order['date'];
+        DateTime dateTime = DateTime.parse(timestamp);
+        String formattedDateTime = '${dateTime.year}-${_addLeadingZero(dateTime.month)}-${_addLeadingZero(dateTime.day)} ${_addLeadingZero(dateTime.hour)}:${_addLeadingZero(dateTime.minute)}:${_addLeadingZero(dateTime.second)}';
         return ListTile(
           leading: Icon(Icons.shopping_bag),
           title: Text('Order $orderId'),
-          subtitle: Text('Date: ${_formatDate(orderDate)}'),
+          subtitle: Text('Fecha: ${formattedDateTime}'),
           trailing: Icon(Icons.arrow_forward_ios),
           onTap: () {
             Navigator.push(
@@ -69,10 +69,19 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
       },
     );
   }
-  String _formatDate(DateTime date) {
-  // Formatea la fecha en el formato deseado
-  return '${date.day}/${date.month}/${date.year}';
-}
+
+  String _addLeadingZero(int value) {
+    return value < 10 ? '0$value' : '$value';
+  }
+
+  String _addMicroseconds(int value) {
+    String micros = value.toString();
+    if (micros.length < 6) {
+      // Añadir ceros a la izquierda si es necesario
+      micros = '0' * (6 - micros.length) + micros;
+    }
+    return micros;
+  }
 }
 
 class OrderDetailPage extends StatelessWidget {
@@ -82,20 +91,72 @@ class OrderDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final timestamp = order['date'];
+    DateTime dateTime = DateTime.parse(timestamp);
+    String formattedDateTime = '${dateTime.year}-${_addLeadingZero(dateTime.month)}-${_addLeadingZero(dateTime.day)} ${_addLeadingZero(dateTime.hour)}:${_addLeadingZero(dateTime.minute)}:${_addLeadingZero(dateTime.second)}';
     return Scaffold(
       appBar: AppBar(
         title: Text('Order Detail'),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Order ID: ${order['id']}'),
-            Text('Total: \$${order['total']}'),
-            // Agrega más detalles del pedido según sea necesario
+            Text(
+              'Order ID: ${order['id']}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Fecha: ${formattedDateTime}',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Total: \$${order['total']}',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Order Number: ${order['orderNumber']}',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Status: ${order['status']}',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'User ID: ${order['uid']}',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Products: ${order['products'].toString()}',
+              style: TextStyle(fontSize: 16),
+            ),
           ],
         ),
       ),
     );
   }
+
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.year}-${_addLeadingZero(dateTime.month)}-${_addLeadingZero(dateTime.day)} ${_addLeadingZero(dateTime.hour)}:${_addLeadingZero(dateTime.minute)}:${_addLeadingZero(dateTime.second)}.${_addMicroseconds(dateTime.microsecond)}';
+  }
+
+  String _addLeadingZero(int value) {
+    return value < 10 ? '0$value' : '$value';
+  }
+
+  String _addMicroseconds(int value) {
+    String micros = value.toString();
+    if (micros.length < 6) {
+      micros = '0' * (6 - micros.length) + micros;
+    }
+    return micros;
+  }
 }
+

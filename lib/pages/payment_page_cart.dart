@@ -5,6 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import '../domain/models/cart_item.dart';
 import 'package:parkware/config/constants/environment.dart';
 import 'package:parkware/presentation/views/order/order_screen.dart';
+import 'package:parkware/controllers/user_controller.dart';
 
 class PaymentPageCart extends StatefulWidget {
   final int totalPrice;
@@ -156,28 +157,68 @@ class _PaymentPageCartState extends State<PaymentPageCart> {
     }
   }
 
-  displayPaymentSheet() async {
-    try {
-      await Stripe.instance.presentPaymentSheet().then(
-            (value) {},
-          );
-        DateTime now = DateTime.now();
-        String formattedDate = '${now.day} de ${_getMonthName(now.month)}, ${now.year}';
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => OrderView(
-            orderId: '123456',
+displayPaymentSheet() async {
+  try {
+    // Presentar el formulario de pago de Stripe
+    await Stripe.instance.presentPaymentSheet().then(
+      (value) {},
+    );
+
+    DateTime now = DateTime.now();
+    final String uid = UserController.getCurrentUserUid();
+    Map<String, dynamic> orderData = {
+      'uid': uid,
+      'date': now.toString(),
+      'products': widget.cartItems.map((item) => item.toJson()).toList(), // Convertir los productos a JSON
+      'total': widget.totalPrice,
+    };
+
+    // Hacer la solicitud POST a la API
+    var response = await http.post(
+      Uri.parse('http://localhost:3000/api/purchases/create'), // Reemplaza 'URL_DE_TU_API' con la URL de tu API
+      body: jsonEncode(orderData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      DateTime dateTime = DateTime.parse(jsonDecode(response.body)['date']);
+      String formattedDateTime = '${dateTime.year}-${_addLeadingZero(dateTime.month)}-${_addLeadingZero(dateTime.day)} ${_addLeadingZero(dateTime.hour)}:${_addLeadingZero(dateTime.minute)}:${_addLeadingZero(dateTime.second)}';
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OrderView(
+            orderId: jsonDecode(response.body)['id'],
             status: 'Orden Realizada',
-            date: formattedDate,
+            date: formattedDateTime,
             totalAmount: widget.totalPrice,
-          ),),
-        );
-    } on StripeException catch (e) {
-      debugPrint('Payment failed: ${e.error.localizedMessage}');
-    } catch (e) {
-      debugPrint('An unexpected error occurred: $e');
+          ),
+        ),
+      );
+    } else {
+      debugPrint('Error al crear la orden: ${response.body}');
     }
+  } on StripeException catch (e) {
+    debugPrint('Error de pago: ${e.error.localizedMessage}');
+  } catch (e) {
+    debugPrint('Se produjo un error inesperado: $e');
   }
+}
+
+  String _addLeadingZero(int value) {
+    return value < 10 ? '0$value' : '$value';
+  }
+
+  String _addMicroseconds(int value) {
+    String micros = value.toString();
+    if (micros.length < 6) {
+      // Añadir ceros a la izquierda si es necesario
+      micros = '0' * (6 - micros.length) + micros;
+    }
+    return micros;
+  }
+
   String _getMonthName(int month) {
   switch (month) {
     case 1:

@@ -10,6 +10,9 @@ class OrderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Formatear el total manualmente como 356.00 MXN
+    final formattedTotal = '${(totalAmount / 100).toStringAsFixed(2)} MXN';
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalles del Pedido'),
@@ -28,23 +31,31 @@ class OrderView extends StatelessWidget {
               ),
               SizedBox(height: 20.0),
               Text(
-                'Pedido #${orderId}',
+                'Pedido #$orderId',
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10.0),
               Text(
-                'Estado: ${status}',
+                'Estado: $status',
                 style: TextStyle(fontSize: 18.0),
               ),
               SizedBox(height: 10.0),
               Text(
-                'Fecha: ${date}',
+                'Fecha: $date',
                 style: TextStyle(fontSize: 18.0),
               ),
               SizedBox(height: 10.0),
               Text(
-                'Total: \$${totalAmount.toStringAsFixed(2)}',
+                'Total: $formattedTotal',
                 style: TextStyle(fontSize: 18.0),
+              ),
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () {
+                  // Navegar de vuelta al menú principal
+                  Navigator.of(context).pop();
+                },
+                child: Text('Volver al Menú'),
               ),
             ],
           ),

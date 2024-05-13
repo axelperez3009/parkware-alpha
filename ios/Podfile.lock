@@ -80,6 +80,8 @@ PODS:
     - FlutterMacOS
   - PromisesObjC (2.3.1)
   - RecaptchaInterop (100.0.0)
+  - restart_app (0.0.1):
+    - Flutter
   - ScanbotBarcodeScannerSDK (3.6.0)
   - Stripe (23.22.1):
     - StripeApplePay (= 23.22.1)
@@ -129,6 +131,7 @@ DEPENDENCIES:
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - location (from `.symlinks/plugins/location/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - restart_app (from `.symlinks/plugins/restart_app/ios`)
   - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
 
 SPEC REPOS:
@@ -176,6 +179,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/location/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  restart_app:
+    :path: ".symlinks/plugins/restart_app/ios"
   stripe_ios:
     :path: ".symlinks/plugins/stripe_ios/ios"
 
@@ -202,6 +207,7 @@ SPEC CHECKSUMS:
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  restart_app: 806659942bf932f6ce51c5372f91ce5e81c8c14a
   ScanbotBarcodeScannerSDK: fac0c9f5da6a2a9c3c08d9bfcca9fc8e93d2b570
   Stripe: b65e9f748f8f51b51e015b0d72f5474dc0708788
   stripe_ios: 433385aa051f8965915d495744946ee5a5d657db

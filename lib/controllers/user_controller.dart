@@ -7,26 +7,38 @@ class UserController {
   static Future<User?> loginWithGoogle() async {
     final googleAccount = await GoogleSignIn().signIn();
 
-    final googleAuth = await googleAccount?.authentication;
+    if (googleAccount == null) {
+      // El usuario canceló el inicio de sesión con Google
+      return null;
+    }
+
+    final googleAuth = await googleAccount.authentication;
 
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
 
     final userCredential = await FirebaseAuth.instance.signInWithCredential(
       credential,
     );
-    return userCredential.user;
+    
+    // Actualizar la instancia de usuario
+    user = userCredential.user;
+
+    return user;
   }
 
   static Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
+    // Limpiar la instancia de usuario al cerrar sesión
+    user = null;
   }
 
   // Método para obtener el UID del usuario actualmente autenticado
   static String getCurrentUserUid() {
-    return user!.uid;
+    return user?.uid ?? "";
   }
 }
+
