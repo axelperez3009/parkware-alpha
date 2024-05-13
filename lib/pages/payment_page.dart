@@ -9,7 +9,7 @@ import '../domain/models/attraction.dart';
 class PaymentPage extends StatefulWidget {
   final int totalPrice;
   final int ticketCount;
-  final Attraction attraction;
+  final Map<String, dynamic>  attraction;
 
   const PaymentPage({
     Key? key,
@@ -85,17 +85,17 @@ class _PaymentPageState extends State<PaymentPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Atracción: ${widget.attraction.name}',
+          'Atracción: ${widget.attraction['name']}',
           style: TextStyle(fontSize: 18),
         ),
         SizedBox(height: 10),
         Text(
-          'Descripción: ${widget.attraction.description}',
+          'Descripción: ${widget.attraction['description']}',
           style: TextStyle(fontSize: 18),
         ),
         SizedBox(height: 10),
         Text(
-          'Precio por boleto: \$${widget.attraction.price.toStringAsFixed(2)}',
+          'Precio por boleto: \$${widget.attraction['price'].toStringAsFixed(2)}',
           style: TextStyle(fontSize: 18),
         ),
         SizedBox(height: 10),
@@ -131,7 +131,7 @@ class _PaymentPageState extends State<PaymentPage> {
   Future<void> makePayment({
     required int totalPrice,
     required int ticketCount,
-    required Attraction attraction,
+    required Map<String, dynamic>  attraction,
   }) async {
     try {
       paymentIntentData = await createPaymentIntent(totalPrice);

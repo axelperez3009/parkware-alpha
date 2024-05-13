@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:parkware/pages/login_page.dart';
 import '../controllers/user_controller.dart';
 import 'package:parkware/presentation/views/purchases/purchases_screen.dart';
+import 'package:parkware/presentation/views/help/help_screen.dart';
+import 'package:parkware/presentation/views/notifications/notifications_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -40,12 +42,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     ),
     SizedBox(width: 10),
-    ElevatedButton(
-      onPressed: () async {
-        // Aquí puedes agregar la navegación a la página de ajustes
-      },
-      child: Icon(Icons.settings),
-    ),
   ],
 ),
 
@@ -67,21 +63,20 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Icon(Icons.notifications),
                   title: Text('Notificaciones'),
                   onTap: () {
-                    // Implementa la navegación a la sección de notificaciones
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => NotificationListPage()),
+                    );
                   },
                 ),
                 ListTile(
                   leading: Icon(Icons.help),
                   title: Text('¿Necesitas Ayuda?'),
                   onTap: () {
-                    // Implementa la navegación a la sección de ayuda
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.mail),
-                  title: Text('Buzón'),
-                  onTap: () {
-                    // Implementa la navegación a la sección de buzón
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HelpPage()),
+                    );
                   },
                 ),
               ],

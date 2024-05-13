@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tickets_details_page.dart'; 
-import '../domain/models/attraction.dart';
+import 'package:parkware/data/api_service.dart';
 
 class TicketsPage extends StatefulWidget {
   const TicketsPage({Key? key}) : super(key: key);
@@ -10,34 +10,24 @@ class TicketsPage extends StatefulWidget {
 }
 
 class _TicketsPageState extends State<TicketsPage> {
-  final List<Attraction> attractions = [
-    Attraction(
-      name: 'Safari',
-      description: '¡Disfruta de un emocionante safari!',
-      price: 30.0,
-      imageUrls: [
-        'https://scontent.fgdl9-1.fna.fbcdn.net/v/t39.30808-6/428639612_7350713348284236_8719751971340554894_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=lO2YQGWWff0AX-IUnP6&_nc_ht=scontent.fgdl9-1.fna&oh=00_AfBUEVS21GKACNlJHoH3Ecp2ntsCNyj6kALBPHYzhYndWg&oe=65FEDDBB',
-        'https://scontent.fgdl9-1.fna.fbcdn.net/v/t39.30808-6/428639549_7350710164951221_2119606763503927121_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=5f2048&_nc_ohc=_06RXMAY_0cAX93YaTi&_nc_ht=scontent.fgdl9-1.fna&oh=00_AfCmLcwj003BG6OOWMQz-zBVBsu1HL5MsWp_UnuCitxLgA&oe=65FFAA82',
-        'https://scontent.fgdl9-1.fna.fbcdn.net/v/t39.30808-6/432507461_6846625282108821_5762710724586382067_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=5f2048&_nc_ohc=-Sti8f8FXukAX_CpSK8&_nc_ht=scontent.fgdl9-1.fna&oh=00_AfAiyzr7bcE11ZyWkFuqzyPCO9q0jQK80zIPNHxG4wpTfA&oe=65FE9146'
-      ],
-    ),
-    Attraction(
-      name: 'Sky Zoo',
-      description: '¡Explora el cielo en nuestro zoo aéreo!',
-      price: 40.0,
-      imageUrls: [
-        'https://m.gdltours.com/wp-content/uploads/2017/11/Sky_Zoo_Zoologico_Guadalajara.jpg'
-      ],
-    ),
-    Attraction(
-      name: 'Tren',
-      description: '¡Viaja por el parque en nuestro tren temático!',
-      price: 20.0,
-      imageUrls: [
-        'https://scontent.fgdl9-1.fna.fbcdn.net/v/t39.30808-6/432016222_6846634265441256_5732826167494448576_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=5f2048&_nc_ohc=HuxPOvh0xIUAX9tHkJn&_nc_ht=scontent.fgdl9-1.fna&oh=00_AfCl-AMLv9_zK2p18j_tKMggwfOmmWc59kprbmWVkZj3oA&oe=65FFA304',
-      ],
-    ),
-  ];
+  List<dynamic> attractions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAttractions();
+  }
+
+  Future<void> _fetchAttractions() async {
+    try {
+      final Map<String, dynamic> productos = await ApiService.getAllAttractions();
+      setState(() {
+        attractions = productos['result'];
+      });
+    } catch (e) {
+      print('Error al obtener productos: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +38,11 @@ class _TicketsPageState extends State<TicketsPage> {
       body: ListView.builder(
         itemCount: attractions.length,
         itemBuilder: (context, index) {
+          final attraction = attractions[index];
+          final imageRef = attraction['images'][0]['asset']['_ref']; // Obtener la URL de la imagen
+          String imageUrl = ApiService.getImageUrl(imageRef);
+          final price = attraction['price']; // Obtener el precio
+
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -64,7 +59,7 @@ class _TicketsPageState extends State<TicketsPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     image: DecorationImage(
-                      image: NetworkImage(attractions[index].imageUrls.first),
+                      image: NetworkImage(imageUrl),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -76,10 +71,22 @@ class _TicketsPageState extends State<TicketsPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => TicketsDetailsPage(attraction: attractions[index])),
+                        MaterialPageRoute(builder: (context) => TicketsDetailsPage(attraction: attraction)),
                       );
                     },
-                    child: Text('Ver Detalles del: ${attractions[index].name}'),
+                    child: Text('Ver Detalles del: ${attraction['name']}'), // Mostrar el nombre de la atracción
+                  ),
+                ),
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    color: Colors.black54,
+                    child: Text(
+                      price <= 0 ? 'Gratis' : '\$$price', // Mostrar el precio
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
