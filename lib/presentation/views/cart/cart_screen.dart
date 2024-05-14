@@ -37,21 +37,23 @@ class _CartScreenState extends State<CartScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PaymentPageCart(
-                cartItems: widget.cartItems,
-                totalPrice: totalAmount.toInt() * 100,
-              ),
+      floatingActionButton: totalAmount == 0
+          ? null // Si el total es 0, el botón desaparece
+          : FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentPageCart(
+                      cartItems: widget.cartItems,
+                      totalPrice: totalAmount.toInt() * 100,
+                    ),
+                  ),
+                );
+              },
+              label: Text('Pagar'),
+              icon: Icon(Icons.payment),
             ),
-          );
-        },
-        label: Text('Pagar'),
-        icon: Icon(Icons.payment),
-      ),
       bottomNavigationBar: TotalAmountWidget(totalAmount: totalAmount),
     );
   }

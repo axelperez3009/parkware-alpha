@@ -11,6 +11,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   List<Map<String, dynamic>> newsList = [];
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -19,6 +20,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _fetchNews() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       Map<String, dynamic> fetchedNews = await ApiService.getAllNews();
       setState(() {
@@ -26,59 +30,68 @@ class _MainPageState extends State<MainPage> {
       });
     } catch (e) {
       print('Error en el fetch: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            color: Colors.green, // Color de fondo para la parte superior
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Bienvenido",
-                      style: TextStyle(
-                        fontSize: 20, // Tamaño de la fuente deseado
-                        color: Colors.white,
+      body: RefreshIndicator(
+        onRefresh: _fetchNews, // Agrega la función de actualizar
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              color: Colors.green, // Color de fondo para la parte superior
+              padding: EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Bienvenido",
+                        style: TextStyle(
+                          fontSize: 20, // Tamaño de la fuente deseado
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      UserController.user?.displayName ?? '',
-                      style: TextStyle(
-                        fontSize: 16, // Tamaño de la fuente deseado
-                        color: Colors.white,
+                      SizedBox(height: 5),
+                      Text(
+                        UserController.user?.displayName ?? '',
+                        style: TextStyle(
+                          fontSize: 16, // Tamaño de la fuente deseado
+                          color: Colors.white,
+                        ),
                       ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator()) // Muestra el indicador de carga
+                  : ListView.builder(
+                      itemCount: newsList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        String imageRef = newsList[index]['image']['asset']['_ref'];
+                        String imageUrl = ApiService.getImageUrl(imageRef);
+                        return _buildNewsItem(
+                          imageUrl,
+                          newsList[index]['title'],
+                          newsList[index]['description'],
+                        );
+                      },
                     ),
-                  ],
-                ),
-              ],
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: newsList.length,
-              itemBuilder: (BuildContext context, int index) {
-                String imageRef = newsList[index]['image']['asset']['_ref'];
-                String imageUrl = ApiService.getImageUrl(imageRef);
-                return _buildNewsItem(
-                  imageUrl,
-                  newsList[index]['title'],
-                  newsList[index]['description'],
-                );
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -118,4 +131,3 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:parkware/presentation/views/cart/cart_screen.dart';
-import 'package:parkware/domain/models/cart_item.dart';
-import 'package:parkware/data/api_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:parkware/data/api_service.dart';
+import 'package:parkware/domain/models/cart_item.dart';
+import 'package:parkware/presentation/views/cart/cart_screen.dart';
 
 class LimitedText extends StatelessWidget {
   final String description;
@@ -54,7 +54,10 @@ class _StorePageState extends State<StorePage> {
       isLoading = true;
     });
     try {
-      await _fetchProducts();
+      final productos = await ApiService.getAllProducts();
+      setState(() {
+        products = productos['result'];
+      });
       await _fetchCatalogs();
     } catch (e) {
       print('Error al obtener datos: $e');
@@ -65,14 +68,8 @@ class _StorePageState extends State<StorePage> {
     }
   }
 
-  Future<void> _fetchProducts() async {
-    final Map<String, dynamic> productos = await ApiService.getAllProducts();
-    setState(() {
-      products = productos['result'];
-    });
-  }
-
   Future<void> _fetchCatalogs() async {
+    catalogInfoList.clear();
     for (String catalogId in widget.catalogsId) {
       final Map<String, dynamic> catalog = await ApiService.getDocumentById(catalogId);
       String catalogName = catalog['result'][0]['name']['es_es'];
@@ -87,75 +84,101 @@ class _StorePageState extends State<StorePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Calcular la cantidad total de elementos en el carrito
+    int cartTotalItems = cartItems.fold(0, (total, item) => total + item.quantity);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.storeName),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems, onCartUpdated: _updateCart)),
-              );
-            },
-            icon: Icon(Icons.shopping_cart),
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems, onCartUpdated: _updateCart)),
+                  );
+                },
+                icon: Icon(Icons.shopping_cart),
+              ),
+              if (cartTotalItems > 0) // Mostrar el número de elementos en un círculo
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      cartTotalItems > 99 ? '99+' : cartTotalItems.toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
-      body: isLoading ? _buildLoadingIndicator() : _buildCatalogSection(),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Center(
-      child: CircularProgressIndicator(),
+      body: _buildCatalogSection(),
     );
   }
 
   Widget _buildCatalogSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Column(
-        children: catalogInfoList.map((catalogInfo) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Text(
-                  catalogInfo.catalogName,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      child: RefreshIndicator(
+        onRefresh: _fetchData,
+        child: ListView.builder(
+          itemCount: catalogInfoList.length,
+          itemBuilder: (context, index) {
+            final catalogInfo = catalogInfoList[index];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    catalogInfo.catalogName,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              _buildProductsList(catalogInfo.productRefs),
-            ],
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildProductsList(List<String> productRefs) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: products.map<Widget>((product) {
-          bool belongsToCatalog = productRefs.contains(product['_id']);
-          if (belongsToCatalog) {
-            double price = double.parse(product['price']);
-            String imageRef = product['image']['asset']['_ref'];
-            String imageUrl = ApiService.getImageUrl(imageRef);
-            return _buildProductItem(
-              product['name']['es_es'],
-              price,
-              imageUrl,
-              product['description']['es_es'],
+                SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: products.map<Widget>((product) {
+                      bool belongsToCatalog = catalogInfo.productRefs.contains(product['_id']);
+                      if (belongsToCatalog) {
+                        double price = double.parse(product['price']);
+                        String imageRef = product['image']['asset']['_ref'];
+                        String imageUrl = ApiService.getImageUrl(imageRef);
+                        return _buildProductItem(
+                          product['name']['es_es'],
+                          price,
+                          imageUrl,
+                          product['description']['es_es'],
+                        );
+                      } else {
+                        return SizedBox();
+                      }
+                    }).toList(),
+                  ),
+                ),
+              ],
             );
-          } else {
-            return SizedBox();
-          }
-        }).toList(),
+          },
+        ),
       ),
     );
   }

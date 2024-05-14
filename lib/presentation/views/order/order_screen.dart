@@ -49,24 +49,16 @@ class _OrderPageState extends State<OrderPage> {
       appBar: AppBar(
         title: Text('Ordena'),
       ),
-      body: Container(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Tiendas Cercanas',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Expanded( // Envuelve la lista en un Expanded para que pueda ocupar todo el espacio disponible
-              child: RefreshIndicator( // Agrega el RefreshIndicator
-                onRefresh: _fetchStores, // Define la función que se ejecutará al hacer pull to refresh
-                child: isLoading ? _buildLoadingIndicator() : _buildStoresList(), // Muestra el indicador de carga o la lista de tiendas
+      body: RefreshIndicator(
+        onRefresh: _fetchStores,
+        child: isLoading
+            ? _buildLoadingIndicator() // Si está cargando, muestra el indicador de carga
+            : ListView.builder( // Si no está cargando, muestra la lista de tiendas
+                itemCount: stores.length,
+                itemBuilder: (context, index) {
+                  return _buildStoreItem(stores[index]);
+                },
               ),
-            ),
-          ],
-        ),
       ),
       floatingActionButton: selectedStore != null && selectedStore!.available
           ? FloatingActionButton(
@@ -88,68 +80,21 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Widget _buildStoresList() {
-    return Container(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: stores.length,
-        itemBuilder: (context, index) {
-          return SizedBox(
-            width: 150,
-            child: _buildStoreItem(stores[index]),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildStoreItem(Store store) {
-    return GestureDetector(
+    return ListTile(
       onTap: () {
         setState(() {
           selectedStore = selectedStore == store ? null : store;
         });
       },
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: Container(
-          width: 120,
-          height: 80,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.0),
-            color: selectedStore == store ? Colors.blue[100] : Colors.white,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                store.available ? Icons.store : Icons.store_outlined,
-                size: 36,
-                color: store.available ? Colors.green : Colors.red,
-              ),
-              SizedBox(height: 4),
-              Text(
-                store.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                store.available ? 'Abierta' : 'Cerrada',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: store.available ? Colors.green : Colors.red,
-                ),
-              ),
-            ],
-          ),
-        ),
+      title: Text(store.name),
+      subtitle: Text(store.available ? 'Abierta' : 'Cerrada'),
+      leading: Icon(
+        store.available ? Icons.store : Icons.store_outlined,
+        color: store.available ? Colors.green : Colors.red,
       ),
+      selected: selectedStore == store,
+      selectedTileColor: Colors.blue[100],
     );
   }
 }
