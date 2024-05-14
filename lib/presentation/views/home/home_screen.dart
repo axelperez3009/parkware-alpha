@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
-import 'main_page.dart';
-import 'tickets_page.dart';
-import 'virtual_queue_page.dart';
-import '../domain/models/attraction.dart';
-import 'order_page.dart';
+import 'package:parkware/presentation/views/order/order_screen.dart';
+import 'package:parkware/domain/models/attraction.dart';
+import 'package:parkware/presentation/views/virtual/virtual_queue_screen.dart';
+import 'package:parkware/presentation/views/tickets/tickets_screen.dart';
+import 'package:parkware/presentation/views/main/main_screen.dart';
+import 'package:parkware/presentation/views/profile/profile_screen.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

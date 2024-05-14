@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'virtual_queue_registration_page.dart'; // Importa la página de registro para la fila virtual si es necesario
-import '../domain/models/attraction.dart'; // Importa el modelo de atracción si es necesario
+import 'package:parkware/presentation/views/virtual/virtual_queue_registration_screen.dart';
+import 'package:parkware/domain/models/attraction.dart';
 
 class VirtualQueuePage extends StatefulWidget {
   final List<Attraction> attractions; // Lista de atracciones disponibles

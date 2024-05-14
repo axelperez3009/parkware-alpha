@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
-import '../domain/models/cart_item.dart';
+import 'package:parkware/domain/models/cart_item.dart';
 import 'package:parkware/config/constants/environment.dart';
-import 'package:parkware/presentation/views/order/order_screen.dart';
+import 'package:parkware/presentation/views/order/order_details_screen.dart';
 import 'package:parkware/controllers/user_controller.dart';
 
 class PaymentPageCart extends StatefulWidget {

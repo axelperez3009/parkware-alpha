@@ -3,13 +3,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:parkware/controllers/user_controller.dart';
-import 'package:parkware/firebase_options.dart';
-import 'package:parkware/pages/home_page.dart';
-import 'package:parkware/pages/login_page.dart';
+import 'package:parkware/config/constants/firebase_options.dart';
+import 'package:parkware/presentation/views/home/home_screen.dart';
+import 'package:parkware/presentation/views/login/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:parkware/config/constants/environment.dart';
-import 'package:parkware/splash_screen.dart';
+import 'package:parkware/presentation/views/splash_screen.dart';
 
 Future<void> initializeDependencies() async {
   WidgetsFlutterBinding.ensureInitialized();

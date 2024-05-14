@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../domain/models/attraction.dart'; // Importa el modelo de atracción si es necesario
+import 'package:parkware/domain/models/attraction.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
 
 class VirtualQueueRegistrationPage extends StatefulWidget {
   final Attraction attraction;
@@ -78,7 +81,9 @@ class _VirtualQueueRegistrationPageState
                 itemCount: registrations.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(registrations[index]),
+                    title: registrations[index].startsWith('data:image') // Check if registration is QR code
+                        ? _buildQRImage(registrations[index])
+                        : Text(registrations[index]),
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
@@ -105,11 +110,16 @@ class _VirtualQueueRegistrationPageState
     );
   }
 
+  Widget _buildQRImage(String base64String) {
+    Uint8List bytes = base64Decode(base64String.split(',').last);
+    return Image.memory(bytes, width: 50, height: 50); // Change width and height as needed
+  }
+
   void _register() {
     String code = codeController.text;
     if (code.isNotEmpty && registrations.length < widget.personsCount) {
       setState(() {
-        registrations.add(code);
+        registrations.add(code.startsWith('data:image') ? code : 'data:image/png;base64,$code');
         codeController.clear();
       });
     }

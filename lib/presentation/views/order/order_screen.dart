@@ -1,61 +1,150 @@
 import 'package:flutter/material.dart';
+import 'package:parkware/presentation/views/store/store_screen.dart';
+import 'package:parkware/data/api_service.dart';
+import 'package:parkware/domain/models/store.dart';
 
-class OrderView extends StatelessWidget {
-  final String orderId;
-  final String status;
-  final String date;
-  final int totalAmount;
+class OrderPage extends StatefulWidget {
+  const OrderPage({Key? key}) : super(key: key);
 
-  OrderView({required this.orderId, required this.status, required this.date, required this.totalAmount});
+  @override
+  _OrderPageState createState() => _OrderPageState();
+}
+
+class _OrderPageState extends State<OrderPage> {
+  late List<Store> stores;
+  Store? selectedStore;
+  bool isLoading = false; // Variable para controlar el estado de carga
+
+  @override
+  void initState() {
+    super.initState();
+    stores = [];
+    selectedStore = null;
+    _fetchStores();
+  }
+
+  Future<void> _fetchStores() async {
+    setState(() {
+      isLoading = true; // Inicia la carga
+    });
+    try {
+      Map<String, dynamic> fetchedStores = await ApiService.getAllStores();
+      setState(() {
+        stores = (fetchedStores['result'] as List<dynamic>)
+            .map((storeData) => Store.fromJson(storeData))
+            .toList();
+        isLoading = false; // Finaliza la carga cuando se obtienen los datos
+      });
+    } catch (e) {
+      print('Error en el fetch: $e');
+      setState(() {
+        isLoading = false; // Finaliza la carga en caso de error
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Formatear el total manualmente como 356.00 MXN
-    final formattedTotal = '${(totalAmount / 100).toStringAsFixed(2)} MXN';
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detalles del Pedido'),
+        title: Text('Ordena'),
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
+      body: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Tiendas Cercanas',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Expanded( // Envuelve la lista en un Expanded para que pueda ocupar todo el espacio disponible
+              child: RefreshIndicator( // Agrega el RefreshIndicator
+                onRefresh: _fetchStores, // Define la función que se ejecutará al hacer pull to refresh
+                child: isLoading ? _buildLoadingIndicator() : _buildStoresList(), // Muestra el indicador de carga o la lista de tiendas
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: selectedStore != null && selectedStore!.available
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StorePage(storeName: selectedStore!.name,catalogsId: selectedStore!.catalogs, id: selectedStore!.id, )),
+                );
+              },
+              child: Icon(Icons.shopping_cart),
+            )
+          : null,
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(), // Muestra un indicador de carga centrado
+    );
+  }
+
+  Widget _buildStoresList() {
+    return Container(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: stores.length,
+        itemBuilder: (context, index) {
+          return SizedBox(
+            width: 150,
+            child: _buildStoreItem(stores[index]),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStoreItem(Store store) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedStore = selectedStore == store ? null : store;
+        });
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: Container(
+          width: 120,
+          height: 80,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            color: selectedStore == store ? Colors.blue[100] : Colors.white,
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 100.0,
+                store.available ? Icons.store : Icons.store_outlined,
+                size: 36,
+                color: store.available ? Colors.green : Colors.red,
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 4),
               Text(
-                'Pedido #$orderId',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                store.name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(height: 10.0),
+              SizedBox(height: 2),
               Text(
-                'Estado: $status',
-                style: TextStyle(fontSize: 18.0),
-              ),
-              SizedBox(height: 10.0),
-              Text(
-                'Fecha: $date',
-                style: TextStyle(fontSize: 18.0),
-              ),
-              SizedBox(height: 10.0),
-              Text(
-                'Total: $formattedTotal',
-                style: TextStyle(fontSize: 18.0),
-              ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Navegar de vuelta al menú principal
-                  Navigator.of(context).pop();
-                },
-                child: Text('Volver al Menú'),
+                store.available ? 'Abierta' : 'Cerrada',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: store.available ? Colors.green : Colors.red,
+                ),
               ),
             ],
           ),

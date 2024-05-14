@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parkware/pages/payment_page_cart.dart';
+import 'package:parkware/presentation/views/payment/payment_order_screen.dart';
 import 'package:parkware/domain/models/cart_item.dart';
 import './widgets/cart_item_widget.dart';
 import './widgets/total_amount_widget.dart';

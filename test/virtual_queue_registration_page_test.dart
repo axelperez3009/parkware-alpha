@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:parkware/pages/virtual_queue_registration_page.dart';
+import 'package:parkware/presentation/views/virtual/virtual_queue_registration_screen.dart';
 import 'package:parkware/domain/models/attraction.dart';
 
 void main() {

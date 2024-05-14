@@ -31,7 +31,6 @@ class StorePage extends StatefulWidget {
   final String id;
   final List<String> catalogsId;
 
-
   const StorePage({Key? key, required this.storeName, required this.catalogsId, required this.id }) : super(key: key);
 
   @override
@@ -42,43 +41,49 @@ class _StorePageState extends State<StorePage> {
   List<CartItem> cartItems = [];
   List<dynamic> products = [];
   List<CatalogInfo> catalogInfoList = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchProducts();
-    _fetchCatalogs();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await _fetchProducts();
+      await _fetchCatalogs();
+    } catch (e) {
+      print('Error al obtener datos: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> _fetchProducts() async {
-    try {
-      final Map<String, dynamic> productos = await ApiService.getAllProducts();
-      setState(() {
-        products = productos['result'];
-      });
-    } catch (e) {
-      print('Error al obtener productos: $e');
-    }
+    final Map<String, dynamic> productos = await ApiService.getAllProducts();
+    setState(() {
+      products = productos['result'];
+    });
   }
 
   Future<void> _fetchCatalogs() async {
-    try {
-      for (String catalogId in widget.catalogsId) {
-        final Map<String, dynamic> catalog = await ApiService.getDocumentById(catalogId);
-        String catalogName = catalog['result'][0]['name']['es_es'];
-        List<dynamic> products = catalog['result'][0]['products'];
-        List<String> productRefs = [];
-        for (dynamic product in products) {
-          productRefs.add(product['_ref']);
-        }
-        catalogInfoList.add(CatalogInfo(catalogName, productRefs));
+    for (String catalogId in widget.catalogsId) {
+      final Map<String, dynamic> catalog = await ApiService.getDocumentById(catalogId);
+      String catalogName = catalog['result'][0]['name']['es_es'];
+      List<dynamic> products = catalog['result'][0]['products'];
+      List<String> productRefs = [];
+      for (dynamic product in products) {
+        productRefs.add(product['_ref']);
       }
-    } catch (e) {
-      print('Error al obtener productos: $e');
+      catalogInfoList.add(CatalogInfo(catalogName, productRefs));
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +102,13 @@ class _StorePageState extends State<StorePage> {
           ),
         ],
       ),
-      body: _buildCatalogSection()
+      body: isLoading ? _buildLoadingIndicator() : _buildCatalogSection(),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
 
@@ -117,7 +128,7 @@ class _StorePageState extends State<StorePage> {
                 ),
               ),
               SizedBox(height: 10),
-              _buildProductsList(catalogInfo.productRefs)
+              _buildProductsList(catalogInfo.productRefs),
             ],
           );
         }).toList(),
@@ -125,8 +136,6 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
-
-  // Función para construir la lista de productos
   Widget _buildProductsList(List<String> productRefs) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -144,34 +153,13 @@ class _StorePageState extends State<StorePage> {
               product['description']['es_es'],
             );
           } else {
-            return SizedBox(); // O devuelve null si no quieres renderizar nada
+            return SizedBox();
           }
         }).toList(),
       ),
     );
   }
 
-
-  // Widget _buildProductsList() {
-  //   return SingleChildScrollView(
-  //     scrollDirection: Axis.horizontal,
-  //     child: Row(
-  //       children: products.map<Widget>((product) {
-  //         double price = double.parse(product['price']);
-  //         String imageRef = product['image']['asset']['_ref'];
-  //         String imageUrl = ApiService.getImageUrl(imageRef);
-  //         return _buildProductItem(
-  //           product['name']['es_es'],
-  //           price,
-  //           imageUrl,
-  //           product['description']['es_es'],
-  //         );
-  //       }).toList(),
-  //     ),
-  //   );
-  // }
-
-  // Función para construir cada elemento de producto
   Widget _buildProductItem(String name, double price, String imageUrl, String description) {
     return GestureDetector(
       onTap: () {
@@ -233,7 +221,8 @@ class _StorePageState extends State<StorePage> {
                   SizedBox(height: 10),
                   LimitedText(
                     description,
-                    wordLimit: 20,),
+                    wordLimit: 20,
+                  ),
                   SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -275,6 +264,7 @@ class _StorePageState extends State<StorePage> {
       },
     );
   }
+
   void showToast(String itemName, double itemPrice, int quantity) {
     String message = 'Se agregaron $quantity de $itemName';
     Fluttertoast.showToast(
@@ -286,6 +276,7 @@ class _StorePageState extends State<StorePage> {
       fontSize: 16.0,
     );
   }
+
   void addToCart(String itemName, double itemPrice, int quantity) {
     setState(() {
       cartItems.add(CartItem(name: itemName, price: itemPrice, quantity: quantity));

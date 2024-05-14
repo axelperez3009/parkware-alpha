@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parkware/pages/login_page.dart';
-import '../controllers/user_controller.dart';
+import 'package:parkware/controllers/user_controller.dart';
 import 'package:parkware/data/api_service.dart';
 
 class MainPage extends StatefulWidget {

@@ -27,6 +27,13 @@ class CartItemWidget extends StatelessWidget {
               onQuantityUpdated(item.quantity - 1);
             },
           ),
+          Padding(
+            padding: EdgeInsets.all(10.0), // Agrega un relleno de 15px en todos los lados
+            child: Text(
+              '${item.quantity}',
+              style: TextStyle(fontSize: 15.0), // Tamaño de texto más grande, por ejemplo, 20px
+            ),
+          ),
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {

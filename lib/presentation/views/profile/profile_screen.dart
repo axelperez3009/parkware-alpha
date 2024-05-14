@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:parkware/pages/login_page.dart';
-import '../controllers/user_controller.dart';
+import 'package:parkware/presentation/views/login/login_screen.dart';
+import 'package:parkware/controllers/user_controller.dart';
 import 'package:parkware/presentation/views/purchases/purchases_screen.dart';
 import 'package:parkware/presentation/views/help/help_screen.dart';
 import 'package:parkware/presentation/views/notifications/notifications_screen.dart';

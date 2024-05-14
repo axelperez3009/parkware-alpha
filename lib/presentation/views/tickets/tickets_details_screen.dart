@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'payment_page.dart';
+import 'package:parkware/presentation/views/payment/payment_attraction_screen.dart';
 import 'package:parkware/data/api_service.dart';
 
 class TicketsDetailsPage extends StatefulWidget {
