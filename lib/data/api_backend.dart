@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class ApiBackend {
   static Future<List<dynamic>> getMyPurchases(String uid) async {
-    const String apiUrl = 'http://localhost:3000/api/purchases/my-purchases';
+    const String apiUrl = 'https://parkware-backend.vercel.app/api/purchases/my-purchases';
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: {

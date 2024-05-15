@@ -175,7 +175,7 @@ displayPaymentSheet() async {
 
     // Hacer la solicitud POST a la API
     var response = await http.post(
-      Uri.parse('http://localhost:3000/api/purchases/create'), // Reemplaza 'URL_DE_TU_API' con la URL de tu API
+      Uri.parse('https://parkware-backend.vercel.app/api/purchases/create'), // Reemplaza 'URL_DE_TU_API' con la URL de tu API
       body: jsonEncode(orderData),
       headers: {
         'Content-Type': 'application/json',

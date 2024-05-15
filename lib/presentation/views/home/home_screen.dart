@@ -5,8 +5,6 @@ import 'package:parkware/presentation/views/virtual/virtual_queue_screen.dart';
 import 'package:parkware/presentation/views/tickets/tickets_screen.dart';
 import 'package:parkware/presentation/views/main/main_screen.dart';
 import 'package:parkware/presentation/views/profile/profile_screen.dart';
-
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
