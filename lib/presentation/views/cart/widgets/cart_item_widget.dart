@@ -16,6 +16,12 @@ class CartItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      leading: Image.network(
+        item.imageUrl,
+        width: 50,
+        height: 50,
+        fit: BoxFit.contain,
+      ),
       title: Text(item.name),
       subtitle: Text('\$${item.price.toStringAsFixed(2)} x ${item.quantity}'),
       trailing: Row(
@@ -28,10 +34,10 @@ class CartItemWidget extends StatelessWidget {
             },
           ),
           Padding(
-            padding: EdgeInsets.all(10.0), // Agrega un relleno de 15px en todos los lados
+            padding: EdgeInsets.all(10.0), // Agrega un relleno de 10px en todos los lados
             child: Text(
               '${item.quantity}',
-              style: TextStyle(fontSize: 15.0), // Tamaño de texto más grande, por ejemplo, 20px
+              style: TextStyle(fontSize: 15.0), // Tamaño de texto más grande, por ejemplo, 15px
             ),
           ),
           IconButton(

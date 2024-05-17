@@ -189,7 +189,7 @@ displayPaymentSheet() async {
         context,
         MaterialPageRoute(
           builder: (context) => OrderView(
-            orderId: jsonDecode(response.body)['id'],
+            orderId: jsonDecode(response.body)['orderNumber'].toString(),
             status: 'Orden Realizada',
             date: formattedDateTime,
             totalAmount: widget.totalPrice,

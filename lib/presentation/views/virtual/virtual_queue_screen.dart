@@ -19,13 +19,19 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Filas Virtuales'),
+        title: const Text('Filas Virtuales en el Safari'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text(
+              '¡Bienvenido al Safari Virtual!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
             Text(
               'Selecciona una atracción:',
               style: TextStyle(fontSize: 20),
@@ -36,14 +42,16 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
               itemCount: widget.attractions.length,
               itemBuilder: (context, index) {
                 final attraction = widget.attractions[index];
-                return ListTile(
-                  title: Text(attraction.name),
-                  subtitle: Text('Precio: \$${attraction.price.toStringAsFixed(2)}'),
-                  onTap: () {
-                    setState(() {
-                      selectedAttraction = attraction;
-                    });
-                  },
+                return Card(
+                  child: ListTile(
+                    title: Text(attraction.name),
+                    subtitle: Text('Precio: \$${attraction.price.toStringAsFixed(2)}'),
+                    onTap: () {
+                      setState(() {
+                        selectedAttraction = attraction;
+                      });
+                    },
+                  ),
                 );
               },
             ),
@@ -55,6 +63,7 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
               ),
               SizedBox(height: 10),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
                     onPressed: () {
@@ -64,12 +73,15 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
                         }
                       });
                     },
-                    icon: Icon(Icons.remove),
+                    icon: Icon(Icons.remove_circle),
+                    iconSize: 36,
                   ),
+                  SizedBox(width: 10),
                   Text(
                     '$selectedPersonsCount',
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 24),
                   ),
+                  SizedBox(width: 10),
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -78,12 +90,13 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
                         }
                       });
                     },
-                    icon: Icon(Icons.add),
+                    icon: Icon(Icons.add_circle),
+                    iconSize: 36,
                   ),
                 ],
               ),
               SizedBox(height: 20),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () {
                   // Navegar a la página de registro de fila virtual
                   Navigator.push(
@@ -94,7 +107,14 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
                     )),
                   );
                 },
-                child: const Text('Registrarse en la Fila Virtual'),
+                icon: Icon(Icons.directions_walk),
+                label: Text('¡Vamos al Safari!'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
               ),
             ],
           ],

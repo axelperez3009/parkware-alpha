@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parkware/presentation/views/home/home_screen.dart';
 
 class OrderView extends StatelessWidget {
   final String orderId;
@@ -16,6 +17,7 @@ class OrderView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalles del Pedido'),
+        automaticallyImplyLeading: false,  // Esta línea oculta la flecha de regreso
       ),
       body: Center(
         child: Padding(
@@ -52,8 +54,11 @@ class OrderView extends StatelessWidget {
               SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
-                  // Navegar de vuelta al menú principal
-                  Navigator.of(context).pop();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    (Route<dynamic> route) => false,
+                  );
                 },
                 child: Text('Volver al Menú'),
               ),

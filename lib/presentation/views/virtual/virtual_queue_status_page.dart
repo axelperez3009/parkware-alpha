@@ -14,11 +14,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Message> messages = [];
+  List<String> queue = [];
   late WebSocketChannel channel;
 
   // 1. Set the WebSocket URL
-  final String wsURL = 'wss://9yrw17niu2.execute-api.us-east-2.amazonaws.com/development/';
+  final String wsURL = 'wss://ytfqydvxll.execute-api.us-east-2.amazonaws.com/dev/';
 
   @override
   void initState() {
@@ -36,15 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // 3. Set WebSocket listener
     channel.stream.listen((event) {
       Map response = jsonDecode(event);
-
+      print(response);
       if (response['message'] != null) {
         setState(() {
-          messages.add(
-            Message(
-              isCurrentUser: false,
-              message: response['message'],
-            ),
-          );
+          queue = List<String>.from(response['queue']);
         });
       }
     }, onDone: () {
@@ -52,18 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void onSubmitMessage(String message) {
-    if (message.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      messages.add(Message(isCurrentUser: true, message: message));
-    });
-
-    // 4. Send messages over the established WebSocket
-    channel.sink
-        .add('{"action": "sendMessage", "body": {"message": "$message"}}');
+  void joinQueue() {
+    // 4. Send a request to join the queue over the established WebSocket
+    channel.sink.add(jsonEncode({'action': 'enqueue', 'body': {}}));
   }
 
   @override
@@ -85,24 +71,16 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              ElevatedButton(
+                onPressed: joinQueue,
+                child: Text('Unirse a la Fila'),
+              ),
+              const SizedBox(height: 20),
               Expanded(
                 child: ListView(
-                  children: [
-                    ...messages.map(
-                      (e) => MessageContainer(
-                        message: e.message,
-                        isCurrentUser: e.isCurrentUser,
-                      ),
-                    ),
-                  ],
+                  children: queue.map((e) => QueueItem(queuePosition: e)).toList(),
                 ),
               ),
-              SizedBox(
-                height: 40,
-                child: MessageField(
-                  onFieldSubmitted: onSubmitMessage,
-                ),
-              )
             ],
           ),
         ),
@@ -111,112 +89,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class MessageField extends StatefulWidget {
-  final Function(String) onFieldSubmitted;
-  const MessageField({
-    Key? key,
-    required this.onFieldSubmitted,
-  }) : super(key: key);
-
-  @override
-  State<MessageField> createState() => _MessageFieldState();
-}
-
-class _MessageFieldState extends State<MessageField> {
-  final TextEditingController msgController = TextEditingController();
-  late FocusNode myFocusNode;
-
-  @override
-  void initState() {
-    super.initState();
-
-    myFocusNode = FocusNode();
-  }
-
-  @override
-  void dispose() {
-    // Clean up the focus node when the Form is disposed.
-    myFocusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      focusNode: myFocusNode,
-      onFieldSubmitted: (value) {
-        msgController.text = '';
-        widget.onFieldSubmitted(value);
-        myFocusNode.requestFocus();
-      },
-      controller: msgController,
-      style: const TextStyle(fontSize: 16),
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          child: Icon(Icons.message, color: Colors.black45, size: 20),
-        ),
-        prefixIconColor: Colors.grey,
-        prefixIconConstraints:
-            const BoxConstraints(maxHeight: 30, maxWidth: 30),
-        hintText: 'Message',
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.transparent),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.transparent),
-        ),
-        fillColor: const Color.fromARGB(255, 228, 228, 228),
-        filled: true,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.transparent),
-        ),
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-      ),
-      onChanged: (val) {},
-    );
-  }
-}
-
-class MessageContainer extends StatelessWidget {
-  const MessageContainer({
-    Key? key,
-    required this.message,
-    required this.isCurrentUser,
-  }) : super(key: key);
-  final String message;
-  final bool isCurrentUser;
+class QueueItem extends StatelessWidget {
+  final String queuePosition;
+  
+  const QueueItem({Key? key, required this.queuePosition}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // add some padding
-      padding: EdgeInsets.fromLTRB(
-        isCurrentUser ? 64.0 : 16.0,
-        4,
-        isCurrentUser ? 16.0 : 64.0,
-        4,
-      ),
-      child: Align(
-        // align the child within the container
-        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-        child: DecoratedBox(
-          // chat bubble decoration
-          decoration: BoxDecoration(
-            color: isCurrentUser ? Colors.blue : Colors.grey[300],
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              message,
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  color: isCurrentUser ? Colors.white : Colors.black87),
-            ),
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            queuePosition,
+            style: Theme.of(context).textTheme.bodyText1,
           ),
         ),
       ),
@@ -224,8 +115,3 @@ class MessageContainer extends StatelessWidget {
   }
 }
 
-class Message {
-  bool isCurrentUser;
-  String message;
-  Message({required this.isCurrentUser, required this.message});
-}

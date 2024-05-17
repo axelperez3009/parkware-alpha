@@ -40,44 +40,50 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: _fetchNews, // Agrega la función de actualizar
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              color: Colors.green, // Color de fondo para la parte superior
-              padding: EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Bienvenido",
-                        style: TextStyle(
-                          fontSize: 20, // Tamaño de la fuente deseado
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        UserController.user?.displayName ?? '',
-                        style: TextStyle(
-                          fontSize: 16, // Tamaño de la fuente deseado
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(120.0),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          flexibleSpace: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  'Bienvenido, ${UserController.user?.displayName ?? ''}',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                ],
+                ),
               ),
-            ),
-            Expanded(
-              child: isLoading
-                  ? Center(child: CircularProgressIndicator()) // Muestra el indicador de carga
+              SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+      body: RefreshIndicator(
+        onRefresh: _fetchNews,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Noticias',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 10),
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
                   : ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
                       itemCount: newsList.length,
                       itemBuilder: (BuildContext context, int index) {
                         String imageRef = newsList[index]['image']['asset']['_ref'];
@@ -89,42 +95,59 @@ class _MainPageState extends State<MainPage> {
                         );
                       },
                     ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildNewsItem(String imageUrl, String title, String description) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Card(
+      elevation: 5,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.network(
-            imageUrl,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(5),
+              topRight: Radius.circular(5),
             ),
-            textAlign: TextAlign.center,
+            child: Image.network(
+              imageUrl,
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
           ),
-          SizedBox(height: 8),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text('Leer más'),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  description,
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'Leer más',
+                      style: TextStyle(color: Colors.green, fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -23,67 +23,90 @@ class _ProfilePageState extends State<ProfilePage> {
             color: Colors.green, // Color de fondo para la parte superior
             padding: EdgeInsets.all(20),
             child: Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    CircleAvatar(
-      radius: 40,
-      foregroundImage: NetworkImage(UserController.user?.photoURL ?? ''),
-    ),
-    Flexible(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Text(
-          UserController.user?.displayName ?? '',
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ),
-    SizedBox(width: 10),
-  ],
-),
-
-          ),
-          Expanded(
-            child: ListView(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ListTile(
-                  leading: Icon(Icons.shopping_cart),
-                  title: Text('Mis Compras'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MyOrdersPage()),
-                    );
-                  },
+                CircleAvatar(
+                  radius: 40,
+                  foregroundImage: NetworkImage(UserController.user?.photoURL ?? ''),
                 ),
-                ListTile(
-                  leading: Icon(Icons.notifications),
-                  title: Text('Notificaciones'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => NotificationListPage()),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.help),
-                  title: Text('¿Necesitas Ayuda?'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HelpPage()),
-                    );
-                  },
+                SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        UserController.user?.displayName ?? '',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        UserController.user?.email ?? '',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
+          ListTile(
+            leading: Icon(Icons.shopping_cart, color: Colors.green),
+            title: Text(
+              'Mis Compras',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyOrdersPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.notifications, color: Colors.green),
+            title: Text(
+              'Notificaciones',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationListPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.help, color: Colors.green),
+            title: Text(
+              '¿Necesitas Ayuda?',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HelpPage()),
+              );
+            },
+          ),
+          SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: ElevatedButton(
               onPressed: () async {
                 await UserController.signOut();
@@ -93,7 +116,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   ));
                 }
               },
-              child: Text("Cerrar Sesión"),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(15),
+                // primary: Colors.red,
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(
+                "Cerrar Sesión",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ],

@@ -49,7 +49,7 @@ class _VirtualQueueRegistrationPageState
             ),
             SizedBox(height: 20),
             Text(
-              'Por favor, proporciona la siguiente información:',
+              'Por favor, proporciona el código QR de tu pulsera:',
               style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
             ),
             SizedBox(height: 10),

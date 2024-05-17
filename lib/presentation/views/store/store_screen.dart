@@ -273,7 +273,7 @@ class _StorePageState extends State<StorePage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      addToCart(name, price, quantity);
+                      addToCart(name, price, quantity, imageUrl);
                       Navigator.pop(context);
                       showToast(name, price, quantity);
                     },
@@ -300,9 +300,9 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
-  void addToCart(String itemName, double itemPrice, int quantity) {
+  void addToCart(String itemName, double itemPrice, int quantity, String imageUrl) {
     setState(() {
-      cartItems.add(CartItem(name: itemName, price: itemPrice, quantity: quantity));
+      cartItems.add(CartItem(name: itemName, price: itemPrice, quantity: quantity, imageUrl: imageUrl));
     });
   }
 
