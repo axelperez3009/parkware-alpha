@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
+import 'package:parkware/presentation/views/virtual/virtual_queue_status_page.dart';
 
 class VirtualQueueRegistrationPage extends StatefulWidget {
   final Attraction attraction;
@@ -104,7 +105,10 @@ class _VirtualQueueRegistrationPageState
       floatingActionButton: registrations.length == widget.personsCount
           ? FloatingActionButton(
               onPressed: () {
-                // Acción para ingresar a la fila virtual
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MyHomePage(title: 'hola')),
+                  );
               },
               child: Icon(Icons.arrow_forward),
               backgroundColor: Colors.green,
