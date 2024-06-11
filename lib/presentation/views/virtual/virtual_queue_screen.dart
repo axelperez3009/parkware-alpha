@@ -19,47 +19,62 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Filas Virtuales en el Safari'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.directions_car),
+            SizedBox(width: 10),
+            Text('Filas Virtuales en el Safari', style: TextStyle(fontSize: 20)),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              '¡Bienvenido al Safari Virtual!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Selecciona una atracción:',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: widget.attractions.length,
-              itemBuilder: (context, index) {
-                final attraction = widget.attractions[index];
-                return Card(
-                  child: ListTile(
-                    title: Text(attraction.name),
-                    subtitle: Text('Precio: \$${attraction.price.toStringAsFixed(2)}'),
-                    onTap: () {
-                      setState(() {
-                        selectedAttraction = attraction;
-                      });
+            Container(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Text(
+                    '¡Bienvenido al Safari Virtual!',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Selecciona una atracción:',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: widget.attractions.length,
+                    itemBuilder: (context, index) {
+                      final attraction = widget.attractions[index];
+                      return Card(
+                        elevation: 3,
+                        child: ListTile(
+                          leading: Icon(Icons.directions_car),
+                          title: Text(attraction.name),
+                          subtitle: Text('Precio: \$${attraction.price.toStringAsFixed(2)}'),
+                          onTap: () {
+                            setState(() {
+                              selectedAttraction = attraction;
+                            });
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
+                ],
+              ),
             ),
             if (selectedAttraction != null) ...[
               SizedBox(height: 20),
               Text(
                 'Selecciona la cantidad de personas:',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 24),
               ),
               SizedBox(height: 10),
               Row(
@@ -73,13 +88,12 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
                         }
                       });
                     },
-                    icon: Icon(Icons.remove_circle),
-                    iconSize: 36,
+                    icon: Icon(Icons.remove_circle, size: 36),
                   ),
                   SizedBox(width: 10),
                   Text(
                     '$selectedPersonsCount',
-                    style: TextStyle(fontSize: 24),
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 10),
                   IconButton(
@@ -90,8 +104,7 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
                         }
                       });
                     },
-                    icon: Icon(Icons.add_circle),
-                    iconSize: 36,
+                    icon: Icon(Icons.add_circle, size: 36),
                   ),
                 ],
               ),
@@ -107,8 +120,11 @@ class _VirtualQueuePageState extends State<VirtualQueuePage> {
                     )),
                   );
                 },
-                icon: Icon(Icons.directions_walk),
-                label: Text('¡Vamos al Safari!'),
+                icon: Icon(Icons.directions_walk, size: 30),
+                label: Text(
+                  '¡Vamos al Safari!',
+                  style: TextStyle(fontSize: 24),
+                ),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parkware/controllers/user_controller.dart';
 import 'package:parkware/domain/models/attraction.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -63,16 +64,6 @@ class _VirtualQueueRegistrationPageState
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: registrations.length < widget.personsCount
-                  ? _register
-                  : null,
-              child: const Text('Registrar'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                textStyle: TextStyle(fontSize: 16),
-              ),
-            ),
             SizedBox(height: 20),
             if (isLoading) Center(child: CircularProgressIndicator()),
             Text(
@@ -105,10 +96,7 @@ class _VirtualQueueRegistrationPageState
       floatingActionButton: registrations.length == widget.personsCount
           ? FloatingActionButton(
               onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyHomePage(title: 'hola')),
-                  );
+                _registerInQueue();
               },
               child: Icon(Icons.arrow_forward),
               backgroundColor: Colors.green,
@@ -129,13 +117,6 @@ class _VirtualQueueRegistrationPageState
     }
   }
 
-  void _register() {
-    String code = codeController.text;
-    if (code.isNotEmpty && registrations.length < widget.personsCount) {
-      _verifyQRCode(code);
-    }
-  }
-
   Future<void> _verifyQRCode(String qrCode) async {
     // Verificar si el código QR ya está registrado
     if (registrations.contains(qrCode)) {
@@ -147,7 +128,7 @@ class _VirtualQueueRegistrationPageState
       isLoading = true;
     });
 
-    final url = Uri.parse('https://parkware-backend.vercel.app/api/qrcode/verify'); // Cambia esto a tu URL de API
+    final url = Uri.parse('https://parkware-ten.vercel.app/api/qrcode/verify'); // Cambia esto a tu URL de API
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -170,6 +151,39 @@ class _VirtualQueueRegistrationPageState
       }
     } else {
       _showErrorDialog("Error verificando el código QR");
+    }
+  }
+
+  Future<void> _registerInQueue() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final url = Uri.parse('https://parkware-ten.vercel.app/api/queue/join');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'uid': UserController.getCurrentUserUid(),
+        'qrCodes': jsonEncode(registrations),
+      }),
+    );
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response.statusCode == 200) {
+      final responseBody = jsonDecode(response.body);
+      if (responseBody['success'] == true) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => VirtualQueueStatusPage(uid: UserController.getCurrentUserUid())),
+        );
+      } else {
+        _showErrorDialog("Error registrando en la fila virtual");
+      }
+    } else {
+      _showErrorDialog("Error en el servidor");
     }
   }
 

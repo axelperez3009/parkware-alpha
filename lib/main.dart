@@ -47,11 +47,14 @@ class MainApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SplashScreen(); // Muestra la pantalla de inicio (splash screen)
           } else {
-            return UserController.user != null ? const HomePage() : const LoginPage(); // Muestra la página de inicio de sesión o la página principal según el estado del usuario
+            return Stack(
+              children: [
+                UserController.user != null ? const HomePage() : const LoginPage()
+              ],
+            );
           }
         },
       ),
     );
   }
 }
-

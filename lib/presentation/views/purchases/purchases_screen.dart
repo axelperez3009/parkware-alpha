@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:parkware/controllers/user_controller.dart';
 import 'package:parkware/data/api_backend.dart';

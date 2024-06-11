@@ -5,6 +5,7 @@ import 'package:parkware/presentation/views/virtual/virtual_queue_screen.dart';
 import 'package:parkware/presentation/views/tickets/tickets_screen.dart';
 import 'package:parkware/presentation/views/main/main_screen.dart';
 import 'package:parkware/presentation/views/profile/profile_screen.dart';
+import 'package:parkware/presentation/views/virtual/widgets/floating_widget.dart';
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -18,7 +19,7 @@ class _HomePageState extends State<HomePage> {
     Attraction(
       name: 'Safari',
       description: '¡La montaña rusa más emocionante del parque!',
-      price: 25.0,
+      price: 85.0,
       imageUrls: [
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1Nac1qpiTKtycdCWnT5lXbnb4jWTF8-6dxMrd-4X5og&s',
         'https://cloudfront-us-east-1.images.arcpublishing.com/infobae/XDEH2GVAB5B4XNFTEH7SRSV754.jpg',
@@ -47,11 +48,15 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         //title: const Text('Parkware'),
       ),
-      body: Center(
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: _widgetOptions,
-        ),
+      body: Stack(
+        children: [
+          Center(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _widgetOptions,
+            ),
+          ), FloatingWidget(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,

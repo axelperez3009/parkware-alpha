@@ -191,7 +191,7 @@ class _PaymentPageState extends State<PaymentPage> {
         };
 
         var response = await http.post(
-          Uri.parse('https://parkware-backend.vercel.app/api/purchases/create'),
+          Uri.parse('https://parkware-ten.vercel.app/api/purchases/create'),
           body: jsonEncode(orderData),
           headers: {
             'Content-Type': 'application/json',
